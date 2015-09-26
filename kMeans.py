@@ -1,4 +1,5 @@
 import sys
+import math
 
 
 def eucldn_distance(datapoint, cluster_center):
@@ -7,14 +8,15 @@ def eucldn_distance(datapoint, cluster_center):
 	p1 = datapoint.split(",")
 	p2 = cluster_center.split(",")
 	
-	print p1
-	print p2
+	#print p1
+	#print p2
 	
 	distance = 0
 	for cord in zip(p1,p2):
-		distance += (int(cord[0]) - int(cord[1]))*(int(cord[0]) - int(cord[1]))
+		distance += (float(cord[0]) - float(cord[1]))*(float(cord[0]) - float(cord[1]))
 
-	print distance
+	#print math.sqrt(distance)
+	return math.sqrt(distance)
 
 
 
@@ -44,11 +46,23 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations):
 		initial_clusters[centroid] = list()
 
 	#print initial_clusters
-	idx = 0;
+	
+	min_diff = float("inf")
+	
 	for datapoint in datapoints:
-		d1 = eucldn_distance(datapoint,intial_centroids[idx])
-		#print d1
-		break
+		for center in intial_centroids:
+			d = eucldn_distance(datapoint,center)
+			if min_diff > d:
+				min_diff = d
+				ct = center
+		initial_clusters[ct].append(datapoint)
+
+
+	print initial_clusters
+
+
+
+			
 	
 
 
