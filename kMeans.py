@@ -2,6 +2,50 @@ import sys
 import math
 
 
+def new_centroids(initial_clusters):
+	updated_centroids = dict()
+	avg_list = list()
+
+	for key,value in initial_clusters.iteritems():
+		#print key,value
+		v_list = list()
+		vsum_list = list()
+		finalv_list = list()
+		
+		key_list = key.split(",")
+		key_list = [float(a) for a in key_list]
+		for i in value:
+			x = i.split(",")
+			x = [float(a) for a in x]
+			v_list.append(x)
+		#print v_list
+		vsum_list = map(sum, zip(*v_list))
+		#print vsum_list
+		#print key_list
+		finalv_list.append(key_list)
+		finalv_list.append(vsum_list)
+		#print finalv_list
+		finalv_list = map(sum, zip(*finalv_list))
+		#print finalv_list
+		if finalv_list:
+			finalv_list = [x /(len(value) + 1) for x in finalv_list]
+			avg_list.append(finalv_list)
+		else:
+			finalv_list = key_list
+			avg_list.append(finalv_list)
+	#print avg_list
+
+		
+
+		
+
+	
+	
+
+
+
+	#return updated_centroids
+
 def eucldn_distance(datapoint, cluster_center):
 	#print datapoint
 	#print cluster_center
@@ -11,8 +55,10 @@ def eucldn_distance(datapoint, cluster_center):
 	#print p1
 	#print p2
 	
+
 	distance = 0
 	for cord in zip(p1,p2):
+
 		distance += (float(cord[0]) - float(cord[1]))*(float(cord[0]) - float(cord[1]))
 
 	#print math.sqrt(distance)
@@ -25,6 +71,7 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations):
 	intial_centroids = list()
 	initial_clusters  = dict()
 	datapoints = list()
+	no_of_itr_completed = 0
 
 	if init_method == 'first':
 		for datapoint_idx in data_records:
@@ -58,7 +105,16 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations):
 		initial_clusters[ct].append(datapoint)
 
 
-	print initial_clusters
+	#print initial_clusters
+	#print len(initial_clusters['1.5,1.5'])
+	no_of_itr_completed += 1
+
+
+	updated_centroids = dict()
+	updated_clusters  = dict()
+
+	updated_centroids = new_centroids(initial_clusters)
+
 
 
 
