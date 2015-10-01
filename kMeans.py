@@ -1,5 +1,6 @@
 import sys
 import math
+import random
 
 
 
@@ -164,15 +165,22 @@ def new_mappings(value):
 	return avg_list
 
 
-def kmeansClustering(data_records,k,init_method,threshold,maxIterations):
-	
+def kmeansClustering(data_records,k,init_method,threshold,maxIterations,input_file):
+	old_centroid_map = dict()
 	new_centroid_map = dict()
 	intial_centroids = list()
-	initial_clusters  = dict()
+	initial_clusters = dict()
+	final_clusters   = dict() 
 	datapoints = list()
-	no_of_itr_completed = 0
-
+	fo = open(input_file + ".output", "wb")
 	
+	for i in range(k):
+		final_clusters[i] = list()
+		old_centroid_map[i] = None
+
+
+	#print len(data_records)
+	print data_records
 
 
 	if init_method == 'first':
@@ -186,15 +194,25 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations):
 
 	
 	elif init_method == 'rand':
-		print ''
+		rand_list = random.sample(range(0,len(data_records) -1 ),k)
+		print rand_list
+		for i in rand_list:
+			intial_centroids.append(data_records[i])
+		for idx in data_records:
+			datapoints.append(data_records[idx])
+		datapoints = list(set(datapoints) - set(intial_centroids))
 
- 
+		
 	#print intial_centroids
 	#print datapoints
+	i = 0;
 	for centroid in intial_centroids:
+		old_centroid_map[i] = centroid
 		initial_clusters[centroid] = list()
+		i = i + 1
 
 	#print initial_clusters
+	
 	
 	min_diff = float("inf")
 	
@@ -211,9 +229,7 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations):
 
 	
 
-	#print initial_clusters
-	#print len(initial_clusters['1.5,1.5'])
-	no_of_itr_completed += 1
+	
 
 
 	updated_centroids = list()
@@ -263,10 +279,10 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations):
 		#print intial_centroids
 		updated_clusters = initial_clusters
 		#print updated_clusters
-
+		#print old_centroid_map
 		for key,value in updated_clusters.iteritems():
 			new_centroid_map[key] = value
-
+		
 		#print new_centroid_map	
 		for key, value in new_centroid_map.iteritems():
 			new_centroid_map[key] = new_mappings(value)
@@ -283,8 +299,17 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations):
 		con_thd = conve_dis(new_centroid_map)
 		print con_thd
 		if con_thd < threshold:
-			
-			
+			for i in updated_centroids:
+				fo.write(str(i).strip('[]').replace(" ","") + '\n')
+			idx = 0
+			for key, value in initial_clusters.iteritems():
+				for i in range(len(value)):
+					fo.write(str(idx) + '\n')
+				idx = idx + 1
+
+
+
+			fo.close()
 			break
 	
 	
@@ -339,7 +364,10 @@ def main():
 		input_file   = sys.argv[5]
 
 
-
+	print "pending Task 1 mapping of right index to points in outpufile"
+	print "see for multiple iterations updations of clusters , centroids , new map list "
+	print "max iterations value of 1e-9"
+	
 
 	#print num_clusters
 	#print init_method
@@ -349,7 +377,7 @@ def main():
 
 	data_records = read_inputDataset(input_file)
 
-	kmeansClustering(data_records,num_clusters,init_method,con_thrlsd,max_itr)
+	kmeansClustering(data_records,num_clusters,init_method,con_thrlsd,max_itr,input_file)
 
 
 
