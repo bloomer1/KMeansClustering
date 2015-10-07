@@ -171,6 +171,13 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations,input_fi
 	intial_centroids = list()
 	initial_clusters = dict()
 	final_clusters   = dict() 
+	dlist = list()
+	dlist_map = dict()
+	
+
+	for key,value in data_records.iteritems():
+		dlist.append(value)
+
 	datapoints = list()
 	fo = open(input_file + ".output", "wb")
 	
@@ -180,7 +187,7 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations,input_fi
 
 
 	#print len(data_records)
-	print data_records
+	#print data_records
 
 
 	if init_method == 'first':
@@ -195,14 +202,14 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations,input_fi
 	
 	elif init_method == 'rand':
 		rand_list = random.sample(range(0,len(data_records) -1 ),k)
-		print rand_list
+		#print rand_list
 		for i in rand_list:
 			intial_centroids.append(data_records[i])
 		for idx in data_records:
 			datapoints.append(data_records[idx])
 		datapoints = list(set(datapoints) - set(intial_centroids))
 
-		
+	#print 'choosen intial centroids'	
 	#print intial_centroids
 	#print datapoints
 	i = 0;
@@ -248,7 +255,7 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations,input_fi
 	
 	# figure out 1e-9 notation
 
-	for iterations in range(10000000 - 1):
+	for iterations in range(99999999):
 		intial_centroids = updated_centroids
 		initial_clusters = dict()
 		updated_clusters = dict()
@@ -275,38 +282,54 @@ def kmeansClustering(data_records,k,init_method,threshold,maxIterations,input_fi
 			initial_clusters[str(ct).strip('[]')].append(datapoint)
 
 		
-
+		#print 'Intial centroids'
 		#print intial_centroids
 		updated_clusters = initial_clusters
+		#print 'updated_clusters'
 		#print updated_clusters
 		#print old_centroid_map
+		new_centroid_map = dict()
 		for key,value in updated_clusters.iteritems():
 			new_centroid_map[key] = value
-		
+		#print 'new centroid map before'
 		#print new_centroid_map	
 		for key, value in new_centroid_map.iteritems():
 			new_centroid_map[key] = new_mappings(value)
 			
-		print initial_clusters	
-
+		#print initial_clusters	
+		#print 'new centroid map after'
 		#print new_centroid_map
 		
 		updated_centroids = new_centroids2(initial_clusters)
+		#print 'updated_centroids'
 		#print updated_centroids
 
 
 		
 		con_thd = conve_dis(new_centroid_map)
-		print con_thd
-		if con_thd < threshold:
+		#print con_thd
+		if con_thd < float(threshold):
 			for i in updated_centroids:
 				fo.write(str(i).strip('[]').replace(" ","") + '\n')
 			idx = 0
-			for key, value in initial_clusters.iteritems():
-				for i in range(len(value)):
-					fo.write(str(idx) + '\n')
+			#print 'dlist'
+			#print dlist
+			#print 'initial_clusters'
+			#print initial_clusters
+			
+
+			for key,value in initial_clusters.iteritems():
+				for i in value:
+					dlist_map[i] = idx
 				idx = idx + 1
 
+			#print dlist_map
+
+			for i in dlist:
+				fo.write(str(dlist_map[i]) + '\n')
+				
+
+			
 
 
 			fo.close()
@@ -364,9 +387,9 @@ def main():
 		input_file   = sys.argv[5]
 
 
-	print "pending Task 1 mapping of right index to points in outpufile"
-	print "see for multiple iterations updations of clusters , centroids , new map list "
-	print "max iterations value of 1e-9"
+	#print "pending Task 1 mapping of right index to points in outpufile"
+	#print "see for multiple iterations updations of clusters , centroids , new map list "
+	#print "max iterations value of 1e-9"
 	
 
 	#print num_clusters
